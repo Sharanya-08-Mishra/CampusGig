@@ -1,0 +1,6 @@
+target/
+uploads/
+*.class
+.idea/
+.vscode/
+src/main/java/com/campusgig/util/DBConnection.java
