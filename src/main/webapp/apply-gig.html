@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Gig - CampusGig</title>
+</head>
+<body>
+    <h1>Apply for a Campus Gig</h1>
+
+    <form action="apply-gig" method="post" enctype="multipart/form-data">
+
+        <label for="gigId">Gig ID:</label>
+        <input type="number" id="gigId" name="gigId" min="1" required>
+        <br><br>
+
+        <label for="applicantId">Applicant ID:</label>
+        <input type="number" id="applicantId" name="applicantId" min="1" required>
+        <br><br>
+
+        <label for="pitchText">Why are you suitable for this gig?</label>
+        <br>
+        <textarea id="pitchText" name="pitchText" rows="6" cols="50" required></textarea>
+        <br><br>
+
+        <label for="portfolio">Upload Portfolio / Resume:</label>
+        <input type="file" id="portfolio" name="portfolio">
+        <br><br>
+
+        <button type="submit">Submit Application</button>
+
+    </form>
+
+    <br>
+
+    <a href="browse-gigs.html">Back to Browse Gigs</a>
+</body>
+</html>
