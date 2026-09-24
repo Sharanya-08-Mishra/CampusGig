@@ -9,7 +9,7 @@
     <display-name>CampusGig</display-name>
 
     <context-param>
-        <param-name>portfolioUploadDirectory</param-name>
+        <param-name>portfolioUploadDir</param-name>
         <param-value>uploads</param-value>
     </context-param>
 
