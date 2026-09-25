@@ -3,28 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Browse Gigs - CampusGig</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-    <h1>Available Campus Gigs</h1>
+    <!-- Navigation -->
+    <nav class="navbar">
 
-    <form action="browse-gigs" method="get">
+        <a href="index.html" class="logo">
+            Campus<span>Gig</span>
+        </a>
 
-        <label for="search">Search Gigs:</label>
-        <input type="text" id="search" name="search">
+        <ul class="nav-links">
+            <li>
+                <a href="index.html">Home</a>
+            </li>
 
-        <button type="submit">Search</button>
+            <li>
+                <a href="browse-gigs.html">Browse Gigs</a>
+            </li>
 
-    </form>
+            <li>
+                <a href="post-gig.html" class="nav-button">
+                    Post a Gig
+                </a>
+            </li>
+        </ul>
 
-    <hr>
+    </nav>
 
-    <h2>Open Gigs</h2>
 
-    <div id="gig-list">
-        <p>Gigs will appear here.</p>
-    </div>
+    <!-- Main Content -->
+    <main class="container">
+
+        <div class="page-title">
+
+            <h1>Browse Campus Gigs</h1>
+
+            <p>
+                Find opportunities that match your skills and interests.
+            </p>
+
+        </div>
+
+
+        <!-- Search -->
+        <div class="search-box">
+
+            <form action="browse-gigs" method="get" class="search-form">
+
+                <input
+                    type="text"
+                    id="search"
+                    name="search"
+                    placeholder="Search for gigs..."
+                >
+
+                <button type="submit" class="btn btn-primary">
+                    Search
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- Gig Section -->
+        <section>
+
+            <div class="gig-grid">
+
+                <div class="gig-card">
+
+                    <h3>Available Gigs</h3>
+
+                    <p>
+                        Browse campus opportunities posted by students
+                        and members of your campus community.
+                    </p>
+
+                    <div class="gig-info">
+
+                        <span class="gig-budget">
+                            💼 Student Opportunities
+                        </span>
+
+                    </div>
+
+                    <a href="apply-gig.html"
+                       class="btn btn-primary">
+                        Apply for a Gig
+                    </a>
+
+                </div>
+
+
+                <div class="gig-card">
+
+                    <h3>Looking for Work?</h3>
+
+                    <p>
+                        Use the search above to find gigs that match
+                        your skills and interests.
+                    </p>
+
+                    <div class="gig-info">
+
+                        <span class="gig-deadline">
+                            🎓 Campus Based
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="gig-card">
+
+                    <h3>Have an Opportunity?</h3>
+
+                    <p>
+                        Post your own gig and find students who can
+                        help you get the work done.
+                    </p>
+
+                    <div class="gig-info">
+
+                        <span class="gig-budget">
+                            🚀 Post a Gig
+                        </span>
+
+                    </div>
+
+                    <a href="post-gig.html"
+                       class="btn btn-secondary">
+                        Post a Gig
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+
+        <p>
+            © 2026 CampusGig. Built by students, for students.
+        </p>
+
+    </footer>
 
 </body>
 </html>

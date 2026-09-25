@@ -3,38 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Post a Gig - CampusGig</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-    <h1>Post a Campus Gig</h1>
+    <!-- Navigation -->
+    <nav class="navbar">
 
-    <form action="post-gig" method="post">
+        <a href="index.html" class="logo">
+            Campus<span>Gig</span>
+        </a>
 
-        <label for="posterId">Poster ID:</label>
-        <input type="number" id="posterId" name="posterId" required>
-        <br><br>
+        <ul class="nav-links">
+            <li>
+                <a href="index.html">Home</a>
+            </li>
 
-        <label for="title">Gig Title:</label>
-        <input type="text" id="title" name="title" required>
-        <br><br>
+            <li>
+                <a href="browse-gigs.html">Browse Gigs</a>
+            </li>
 
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" required></textarea>
-        <br><br>
+            <li>
+                <a href="post-gig.html" class="nav-button">
+                    Post a Gig
+                </a>
+            </li>
+        </ul>
 
-        <label for="budget">Budget:</label>
-        <input type="number" id="budget" name="budget"
-               step="0.01" min="0.01" required>
-        <br><br>
+    </nav>
 
-        <label for="deadline">Deadline:</label>
-        <input type="date" id="deadline" name="deadline" required>
-        <br><br>
 
-        <button type="submit">Post Gig</button>
+    <!-- Main Content -->
+    <main class="container">
 
-    </form>
+        <div class="page-title">
+
+            <h1>Post a Campus Gig</h1>
+
+            <p>
+                Have a task or opportunity? Find the right student for it.
+            </p>
+
+        </div>
+
+
+        <div class="form-card">
+
+            <!-- IMPORTANT: Backend connection preserved -->
+            <form action="post-gig" method="post">
+
+                <div class="form-group">
+
+                    <label for="posterId">
+                        Poster ID
+                    </label>
+
+                    <input
+                        type="number"
+                        id="posterId"
+                        name="posterId"
+                        placeholder="Enter your student ID"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="title">
+                        Gig Title
+                    </label>
+
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        placeholder="e.g. Need help designing a poster"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Describe the work, requirements and expectations..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="budget">
+                        Budget (₹)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="budget"
+                        name="budget"
+                        placeholder="e.g. 500"
+                        step="0.01"
+                        min="0.01"
+                        required
+                    >
+
+                    <p class="form-help">
+                        Enter the amount you are willing to pay for this gig.
+                    </p>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="deadline">
+                        Deadline
+                    </label>
+
+                    <input
+                        type="date"
+                        id="deadline"
+                        name="deadline"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Post Gig
+                    </button>
+
+                    <a
+                        href="browse-gigs.html"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+
+        <p>
+            © 2026 CampusGig. Built by students, for students.
+        </p>
+
+    </footer>
 
 </body>
 </html>
