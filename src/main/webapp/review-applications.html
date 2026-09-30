@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Applications - CampusGig</title>
+</head>
+<body>
+    <h1>Review Gig Applications</h1>
+
+    <form action="review-applications" method="get">
+
+        <label for="gigId">Gig ID:</label>
+        <input type="number" id="gigId" name="gigId" min="1" required>
+
+        <button type="submit">View Applications</button>
+
+    </form>
+
+    <hr>
+
+    <h2>Applications</h2>
+
+    <div id="application-list">
+        <p>Applications will appear here.</p>
+    </div>
+
+</body>
+</html>

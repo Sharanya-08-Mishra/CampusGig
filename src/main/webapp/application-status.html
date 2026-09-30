@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Status - CampusGig</title>
+</head>
+<body>
+
+    <h1>Check Application Status</h1>
+
+    <form action="application-status" method="get">
+
+        <label for="applicationId">Application ID:</label>
+        <input type="number" id="applicationId" name="applicationId" min="1" required>
+
+        <button type="submit">Check Status</button>
+
+    </form>
+
+    <hr>
+
+    <div id="status-result">
+        <p>Your application status will appear here.</p>
+    </div>
+
+    <br>
+
+    <a href="browse-gigs.html">Back to Browse Gigs</a>
+
+</body>
+</html>

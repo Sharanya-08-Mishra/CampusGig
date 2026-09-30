@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+import com.campusgig.dao.GigDAO;
+import com.campusgig.model.Gig;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,11 +16,14 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet("/post-gig")
 public class GigPostingServlet extends HttpServlet {
 
+    private final GigDAO gigDAO = new GigDAO();
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
 
         String posterIdText = request.getParameter("posterId");
         String title = request.getParameter("title");
@@ -77,23 +83,63 @@ public class GigPostingServlet extends HttpServlet {
             errors.append("<p>Deadline must be a valid date.</p>");
         }
 
-        // Display validation errors
+        // Stop if validation failed
         if (errors.length() > 0) {
-
             response.getWriter().println("<h1>Gig Posting Failed</h1>");
-            response.getWriter().println(errors.toString());
+            response.getWriter().println(errors);
             response.getWriter().println("<a href='post-gig.html'>Go Back</a>");
-
             return;
         }
 
-        // Temporary success response.
-        // Database insertion will be connected later through GigDAO.
-        response.getWriter().println("<h1>Gig Details Validated Successfully!</h1>");
-        response.getWriter().println("<p>Poster ID: " + posterId + "</p>");
-        response.getWriter().println("<p>Title: " + title + "</p>");
-        response.getWriter().println("<p>Description: " + description + "</p>");
-        response.getWriter().println("<p>Budget: " + budget + "</p>");
-        response.getWriter().println("<p>Deadline: " + deadline + "</p>");
+        title = title.trim();
+        description = description.trim();
+
+        // Create Gig object
+        Gig gig = new Gig();
+
+        gig.setPosterId(posterId);
+        gig.setTitle(title);
+        gig.setDescription(description);
+        gig.setBudget(budget);
+        gig.setDeadline(deadline);
+
+        // New gigs start as Open
+        gig.setStatus("Open");
+
+        // Save gig to database
+        boolean success = gigDAO.addGig(gig);
+
+        if (success) {
+
+            response.getWriter().println("<h1>Gig Posted Successfully!</h1>");
+            response.getWriter().println(
+                    "<p>Poster ID: " + posterId + "</p>"
+            );
+            response.getWriter().println(
+                    "<p>Title: " + title + "</p>"
+            );
+            response.getWriter().println(
+                    "<p>Description: " + description + "</p>"
+            );
+            response.getWriter().println(
+                    "<p>Budget: " + budget + "</p>"
+            );
+            response.getWriter().println(
+                    "<p>Deadline: " + deadline + "</p>"
+            );
+            response.getWriter().println(
+                    "<p>Status: Open</p>"
+            );
+
+        } else {
+
+            response.getWriter().println("<h1>Gig Posting Failed</h1>");
+            response.getWriter().println(
+                    "<p>Gig could not be saved to the database.</p>"
+            );
+            response.getWriter().println(
+                    "<a href='post-gig.html'>Go Back</a>"
+            );
+        }
     }
 }
