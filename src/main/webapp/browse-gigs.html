@@ -11,6 +11,8 @@
 
 <body>
 
+
+
     <!-- Navigation -->
     <nav class="navbar">
 
@@ -162,5 +164,15 @@
 
     </footer>
 
-</body>
+</body> 
+<script>
+    fetch("browse-gigs")
+        .then(response => response.text())
+        .then(data => {
+            document.querySelector(".gig-grid").innerHTML = data;
+        })
+        .catch(error => {
+            console.error("Error loading gigs:", error);
+        });
+</script>
 </html>

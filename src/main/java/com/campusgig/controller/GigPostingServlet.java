@@ -1,11 +1,10 @@
 package com.campusgig.controller;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-
-import com.campusgig.dao.GigDAO;
-import com.campusgig.model.Gig;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,17 +12,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import com.campusgig.util.DBConnection;
+
 @WebServlet("/post-gig")
 public class GigPostingServlet extends HttpServlet {
-
-    private final GigDAO gigDAO = new GigDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("text/html");
-        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
 
         String posterIdText = request.getParameter("posterId");
         String title = request.getParameter("title");
@@ -31,115 +29,51 @@ public class GigPostingServlet extends HttpServlet {
         String budgetText = request.getParameter("budget");
         String deadlineText = request.getParameter("deadline");
 
-        StringBuilder errors = new StringBuilder();
-
-        int posterId = 0;
-        double budget = 0;
-        LocalDate deadline = null;
-
-        // Validate Poster ID
         try {
-            posterId = Integer.parseInt(posterIdText);
+            int posterId = Integer.parseInt(posterIdText);
+            double budget = Double.parseDouble(budgetText);
+            LocalDate deadline = LocalDate.parse(deadlineText);
 
-            if (posterId <= 0) {
-                errors.append("<p>Poster ID must be greater than 0.</p>");
+            if (posterId <= 0 || title == null || title.trim().isEmpty()
+                    || description == null || description.trim().isEmpty()
+                    || budget <= 0 || deadline.isBefore(LocalDate.now())) {
+
+                response.getWriter().println("<h1>Invalid Gig Details</h1>");
+                response.getWriter().println("<a href='post-gig.html'>Go Back</a>");
+                return;
             }
 
-        } catch (Exception e) {
-            errors.append("<p>Poster ID must be a valid number.</p>");
-        }
+            String sql = "INSERT INTO gigs (poster_id, title, description, budget, deadline) "
+                       + "VALUES (?, ?, ?, ?, ?)";
 
-        // Validate title
-        if (title == null || title.trim().isEmpty()) {
-            errors.append("<p>Gig title is required.</p>");
-        }
+            try (Connection conn = DBConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        // Validate description
-        if (description == null || description.trim().isEmpty()) {
-            errors.append("<p>Gig description is required.</p>");
-        }
+                stmt.setInt(1, posterId);
+                stmt.setString(2, title);
+                stmt.setString(3, description);
+                stmt.setDouble(4, budget);
+                stmt.setDate(5, java.sql.Date.valueOf(deadline));
 
-        // Validate budget
-        try {
-            budget = Double.parseDouble(budgetText);
-
-            if (budget <= 0) {
-                errors.append("<p>Budget must be greater than 0.</p>");
+                stmt.executeUpdate();
             }
-
-        } catch (Exception e) {
-            errors.append("<p>Budget must be a valid number.</p>");
-        }
-
-        // Validate deadline
-        try {
-            deadline = LocalDate.parse(deadlineText);
-
-            if (deadline.isBefore(LocalDate.now())) {
-                errors.append("<p>Deadline cannot be in the past.</p>");
-            }
-
-        } catch (DateTimeParseException e) {
-            errors.append("<p>Deadline must be a valid date.</p>");
-        }
-
-        // Stop if validation failed
-        if (errors.length() > 0) {
-            response.getWriter().println("<h1>Gig Posting Failed</h1>");
-            response.getWriter().println(errors);
-            response.getWriter().println("<a href='post-gig.html'>Go Back</a>");
-            return;
-        }
-
-        title = title.trim();
-        description = description.trim();
-
-        // Create Gig object
-        Gig gig = new Gig();
-
-        gig.setPosterId(posterId);
-        gig.setTitle(title);
-        gig.setDescription(description);
-        gig.setBudget(budget);
-        gig.setDeadline(deadline);
-
-        // New gigs start as Open
-        gig.setStatus("Open");
-
-        // Save gig to database
-        boolean success = gigDAO.addGig(gig);
-
-        if (success) {
 
             response.getWriter().println("<h1>Gig Posted Successfully!</h1>");
-            response.getWriter().println(
-                    "<p>Poster ID: " + posterId + "</p>"
-            );
-            response.getWriter().println(
-                    "<p>Title: " + title + "</p>"
-            );
-            response.getWriter().println(
-                    "<p>Description: " + description + "</p>"
-            );
-            response.getWriter().println(
-                    "<p>Budget: " + budget + "</p>"
-            );
-            response.getWriter().println(
-                    "<p>Deadline: " + deadline + "</p>"
-            );
-            response.getWriter().println(
-                    "<p>Status: Open</p>"
-            );
+            response.getWriter().println("<p>Your gig has been saved.</p>");
+            response.getWriter().println("<a href='browse-gigs.html'>Browse Gigs</a>");
 
-        } else {
+        } catch (NumberFormatException | DateTimeParseException e) {
 
-            response.getWriter().println("<h1>Gig Posting Failed</h1>");
-            response.getWriter().println(
-                    "<p>Gig could not be saved to the database.</p>"
-            );
-            response.getWriter().println(
-                    "<a href='post-gig.html'>Go Back</a>"
-            );
+            response.getWriter().println("<h1>Invalid Gig Details</h1>");
+            response.getWriter().println("<p>Please check your input.</p>");
+            response.getWriter().println("<a href='post-gig.html'>Go Back</a>");
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            response.getWriter().println("<h1>Database Error</h1>");
+            response.getWriter().println("<p>Could not save the gig.</p>");
+            response.getWriter().println("<a href='post-gig.html'>Go Back</a>");
         }
     }
 }
