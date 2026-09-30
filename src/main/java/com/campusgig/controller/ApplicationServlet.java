@@ -6,6 +6,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import com.campusgig.dao.ApplicationDAO;
+import com.campusgig.model.Application;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,6 +20,8 @@ import jakarta.servlet.http.Part;
 @WebServlet("/apply-gig")
 @MultipartConfig
 public class ApplicationServlet extends HttpServlet {
+
+    private final ApplicationDAO applicationDAO = new ApplicationDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -77,6 +82,8 @@ public class ApplicationServlet extends HttpServlet {
             return;
         }
 
+        pitchText = pitchText.trim();
+
         // Get uploaded file name
         String fileName = portfolio.getSubmittedFileName();
 
@@ -89,26 +96,35 @@ public class ApplicationServlet extends HttpServlet {
 
         // Keep only the actual file name
         fileName = new File(fileName).getName();
-// Validate portfolio file type
-String lowerFileName = fileName.toLowerCase();
 
-if (!lowerFileName.endsWith(".pdf")
-        && !lowerFileName.endsWith(".jpg")
-        && !lowerFileName.endsWith(".jpeg")
-        && !lowerFileName.endsWith(".png")) {
+        // Validate portfolio file type
+        String lowerFileName = fileName.toLowerCase();
 
-    response.getWriter().println("<h1>Application Failed</h1>");
-    response.getWriter().println("<p>Only PDF, JPG, JPEG and PNG files are allowed.</p>");
-    response.getWriter().println("<a href='apply-gig.html'>Go Back</a>");
-    return;
-}
+        if (!lowerFileName.endsWith(".pdf")
+                && !lowerFileName.endsWith(".jpg")
+                && !lowerFileName.endsWith(".jpeg")
+                && !lowerFileName.endsWith(".png")) {
+
+            response.getWriter().println("<h1>Application Failed</h1>");
+            response.getWriter().println(
+                    "<p>Only PDF, JPG, JPEG and PNG files are allowed.</p>"
+            );
+            response.getWriter().println("<a href='apply-gig.html'>Go Back</a>");
+            return;
+        }
+
         // Read upload configuration from web.xml
-        String uploadDir = getServletContext().getInitParameter("upload.dir");
-        String maxFileSizeText = getServletContext().getInitParameter("max.file.size");
+        String uploadDir =
+                getServletContext().getInitParameter("portfolioUploadDir");
+
+        String maxFileSizeText =
+                getServletContext().getInitParameter("maxFileSize");
 
         if (uploadDir == null || uploadDir.trim().isEmpty()) {
             response.getWriter().println("<h1>Upload Configuration Error</h1>");
-            response.getWriter().println("<p>Upload directory is not configured.</p>");
+            response.getWriter().println(
+                    "<p>Upload directory is not configured.</p>"
+            );
             return;
         }
 
@@ -118,15 +134,21 @@ if (!lowerFileName.endsWith(".pdf")
             maxFileSize = Long.parseLong(maxFileSizeText);
         } catch (Exception e) {
             response.getWriter().println("<h1>Upload Configuration Error</h1>");
-            response.getWriter().println("<p>Maximum file size configuration is invalid.</p>");
+            response.getWriter().println(
+                    "<p>Maximum file size configuration is invalid.</p>"
+            );
             return;
         }
 
         // Check file size
         if (portfolio.getSize() > maxFileSize) {
             response.getWriter().println("<h1>Application Failed</h1>");
-            response.getWriter().println("<p>Portfolio file is too large.</p>");
-            response.getWriter().println("<p>Maximum allowed size is 5 MB.</p>");
+            response.getWriter().println(
+                    "<p>Portfolio file is too large.</p>"
+            );
+            response.getWriter().println(
+                    "<p>Maximum allowed size is 10 MB.</p>"
+            );
             response.getWriter().println("<a href='apply-gig.html'>Go Back</a>");
             return;
         }
@@ -136,7 +158,9 @@ if (!lowerFileName.endsWith(".pdf")
 
         if (realPath == null) {
             response.getWriter().println("<h1>File Upload Failed</h1>");
-            response.getWriter().println("<p>Server upload path could not be determined.</p>");
+            response.getWriter().println(
+                    "<p>Server upload path could not be determined.</p>"
+            );
             return;
         }
 
@@ -145,12 +169,18 @@ if (!lowerFileName.endsWith(".pdf")
 
         if (!uploadDirectory.exists() && !uploadDirectory.mkdirs()) {
             response.getWriter().println("<h1>File Upload Failed</h1>");
-            response.getWriter().println("<p>Could not create upload directory.</p>");
+            response.getWriter().println(
+                    "<p>Could not create upload directory.</p>"
+            );
             return;
         }
 
         // Create a unique file name
-String savedFileName = applicantId + "_" + System.currentTimeMillis() + "_" + fileName;
+        String savedFileName =
+                applicantId + "_" + System.currentTimeMillis() + "_" + fileName;
+
+        File destinationFile =
+                new File(uploadDirectory, savedFileName);
 
         // Save the uploaded file
         try (InputStream inputStream = portfolio.getInputStream()) {
@@ -162,12 +192,60 @@ String savedFileName = applicantId + "_" + System.currentTimeMillis() + "_" + fi
             );
         }
 
-        // Temporary success response
-        // Database insertion will be connected later through ApplicationDAO.
-        response.getWriter().println("<h1>Application Submitted Successfully!</h1>");
-        response.getWriter().println("<p>Gig ID: " + gigId + "</p>");
-        response.getWriter().println("<p>Applicant ID: " + applicantId + "</p>");
-        response.getWriter().println("<p>Pitch: " + pitchText + "</p>");
-        response.getWriter().println("<p>Portfolio file: " + savedFileName + "</p>");
+        // Create Application object
+        Application application = new Application();
+
+        application.setGigId(gigId);
+        application.setApplicantId(applicantId);
+        application.setPitchText(pitchText);
+
+        // Store the relative portfolio path in database
+        String portfolioPath = uploadDir + "/" + savedFileName;
+        application.setPortfolioPath(portfolioPath);
+
+        // Initial application status
+        application.setStatus("Pending");
+
+        // Save application to database
+        boolean success = applicationDAO.addApplication(application);
+
+        if (!success) {
+
+            // Remove uploaded file if database insertion fails
+            try {
+                Files.deleteIfExists(destinationFile.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            response.getWriter().println("<h1>Application Failed</h1>");
+            response.getWriter().println(
+                    "<p>Application could not be saved to the database.</p>"
+            );
+            response.getWriter().println(
+                    "<a href='apply-gig.html'>Go Back</a>"
+            );
+            return;
+        }
+
+        // Success response
+        response.getWriter().println(
+                "<h1>Application Submitted Successfully!</h1>"
+        );
+        response.getWriter().println(
+                "<p>Gig ID: " + gigId + "</p>"
+        );
+        response.getWriter().println(
+                "<p>Applicant ID: " + applicantId + "</p>"
+        );
+        response.getWriter().println(
+                "<p>Pitch: " + pitchText + "</p>"
+        );
+        response.getWriter().println(
+                "<p>Portfolio file: " + savedFileName + "</p>"
+        );
+        response.getWriter().println(
+                "<p>Status: Pending</p>"
+        );
     }
 }
