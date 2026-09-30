@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Post a Gig - CampusGig</title>
+    <title>Apply for Gig - CampusGig</title>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -19,6 +19,7 @@
         </a>
 
         <ul class="nav-links">
+
             <li>
                 <a href="index.html">Home</a>
             </li>
@@ -32,6 +33,7 @@
                     Post a Gig
                 </a>
             </li>
+
         </ul>
 
     </nav>
@@ -42,10 +44,10 @@
 
         <div class="page-title">
 
-            <h1>Post a Campus Gig</h1>
+            <h1>Apply for a Gig</h1>
 
             <p>
-                Have a task or opportunity? Find the right student for it.
+                Tell the gig poster why you're the right person for the job.
             </p>
 
         </div>
@@ -54,18 +56,45 @@
         <div class="form-card">
 
             <!-- IMPORTANT: Backend connection preserved -->
-            <form action="post-gig" method="post">
+            <form
+                action="apply-gig"
+                method="post"
+                enctype="multipart/form-data"
+            >
 
                 <div class="form-group">
 
-                    <label for="posterId">
-                        Poster ID
+                    <label for="gigId">
+                        Gig ID
                     </label>
 
                     <input
                         type="number"
-                        id="posterId"
-                        name="posterId"
+                        id="gigId"
+                        name="gigId"
+                        min="1"
+                        placeholder="Enter the gig ID"
+                        required
+                    >
+
+                    <p class="form-help">
+                        Enter the ID of the gig you want to apply for.
+                    </p>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="applicantId">
+                        Applicant ID
+                    </label>
+
+                    <input
+                        type="number"
+                        id="applicantId"
+                        name="applicantId"
+                        min="1"
                         placeholder="Enter your student ID"
                         required
                     >
@@ -75,31 +104,15 @@
 
                 <div class="form-group">
 
-                    <label for="title">
-                        Gig Title
-                    </label>
-
-                    <input
-                        type="text"
-                        id="title"
-                        name="title"
-                        placeholder="e.g. Need help designing a poster"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="description">
-                        Description
+                    <label for="pitchText">
+                        Why are you suitable for this gig?
                     </label>
 
                     <textarea
-                        id="description"
-                        name="description"
-                        placeholder="Describe the work, requirements and expectations..."
+                        id="pitchText"
+                        name="pitchText"
+                        rows="6"
+                        placeholder="Tell the gig poster about your skills, experience and why you would be a good fit..."
                         required
                     ></textarea>
 
@@ -108,39 +121,19 @@
 
                 <div class="form-group">
 
-                    <label for="budget">
-                        Budget (₹)
+                    <label for="portfolio">
+                        Portfolio / Resume
                     </label>
 
                     <input
-                        type="number"
-                        id="budget"
-                        name="budget"
-                        placeholder="e.g. 500"
-                        step="0.01"
-                        min="0.01"
-                        required
+                        type="file"
+                        id="portfolio"
+                        name="portfolio"
                     >
 
                     <p class="form-help">
-                        Enter the amount you are willing to pay for this gig.
+                        Upload your resume or portfolio if required.
                     </p>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="deadline">
-                        Deadline
-                    </label>
-
-                    <input
-                        type="date"
-                        id="deadline"
-                        name="deadline"
-                        required
-                    >
 
                 </div>
 
@@ -151,14 +144,14 @@
                         type="submit"
                         class="btn btn-primary"
                     >
-                        Post Gig
+                        Submit Application
                     </button>
 
                     <a
                         href="browse-gigs.html"
                         class="btn btn-secondary"
                     >
-                        Cancel
+                        Back to Gigs
                     </a>
 
                 </div>
