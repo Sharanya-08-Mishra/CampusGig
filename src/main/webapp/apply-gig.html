@@ -172,5 +172,15 @@
 
     </footer>
 
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const gigId = urlParams.get('gigId');
+        if (gigId) {
+            const gigInput = document.getElementById('gigId');
+            if (gigInput) {
+                gigInput.value = gigId;
+            }
+        }
+    </script>
 </body>
 </html>

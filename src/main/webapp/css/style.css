@@ -441,3 +441,131 @@ body {
         width: 100%;
     }
 }
+
+/* =========================
+   Status / Confirmation Card
+   ========================= */
+
+.status-card {
+    background: var(--white);
+    max-width: 620px;
+    margin: 40px auto;
+    padding: 42px 36px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.status-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 22px;
+}
+
+.status-icon svg {
+    width: 34px;
+    height: 34px;
+}
+
+.status-icon-success {
+    background: #eefbf1;
+    color: #22c55e;
+}
+
+.status-icon-danger {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.status-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+
+.status-subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 28px;
+}
+
+.status-details {
+    background: #fafafe;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.status-details-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 0;
+    border-bottom: 1px solid #f0f0f8;
+    font-size: 14px;
+}
+
+.status-details-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.status-details-row:first-child {
+    padding-top: 0;
+}
+
+.status-details-label {
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.status-details-value {
+    color: var(--dark);
+    font-weight: 700;
+    text-align: right;
+    word-break: break-word;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.status-badge-open {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.status-error-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    padding: 18px 20px;
+    color: #b91c1c;
+    text-align: left;
+    margin-bottom: 28px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.status-error-box p {
+    margin: 4px 0;
+}
+
+.status-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}

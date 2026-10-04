@@ -166,13 +166,30 @@
 
 </body> 
 <script>
-    fetch("browse-gigs")
-        .then(response => response.text())
-        .then(data => {
-            document.querySelector(".gig-grid").innerHTML = data;
-        })
-        .catch(error => {
-            console.error("Error loading gigs:", error);
+    const searchForm = document.querySelector(".search-form");
+    const searchInput = document.getElementById("search");
+    const gigGrid = document.querySelector(".gig-grid");
+
+    function loadGigs(query = "") {
+        const url = "browse-gigs?ajax=true" + (query ? "&search=" + encodeURIComponent(query) : "");
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                gigGrid.innerHTML = data;
+            })
+            .catch(error => {
+                console.error("Error loading gigs:", error);
+                gigGrid.innerHTML = "<div class='empty-state' style='grid-column: 1 / -1;'><p>Error loading gigs.</p></div>";
+            });
+    }
+
+    loadGigs();
+
+    if (searchForm) {
+        searchForm.addEventListener("submit", function(e) {
+            e.preventDefault();
+            loadGigs(searchInput.value.trim());
         });
+    }
 </script>
 </html>
