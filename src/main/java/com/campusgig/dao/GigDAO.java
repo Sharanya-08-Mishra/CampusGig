@@ -125,4 +125,40 @@ public class GigDAO {
             return false;
         }
     }
+
+    // Delete gig and its associated applications
+    public boolean deleteGig(int gigId) {
+
+        String deleteApplicationsSql = "DELETE FROM applications WHERE gig_id = ?";
+        String deleteGigSql = "DELETE FROM gigs WHERE gig_id = ?";
+
+        try (Connection connection = DBConnection.getConnection()) {
+
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement stmtApp = connection.prepareStatement(deleteApplicationsSql);
+                 PreparedStatement stmtGig = connection.prepareStatement(deleteGigSql)) {
+
+                stmtApp.setInt(1, gigId);
+                stmtApp.executeUpdate();
+
+                stmtGig.setInt(1, gigId);
+                int rows = stmtGig.executeUpdate();
+
+                connection.commit();
+                return rows > 0;
+
+            } catch (Exception e) {
+                connection.rollback();
+                e.printStackTrace();
+                return false;
+            } finally {
+                connection.setAutoCommit(true);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

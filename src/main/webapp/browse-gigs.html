@@ -191,5 +191,24 @@
             loadGigs(searchInput.value.trim());
         });
     }
+
+    function deleteGig(gigId) {
+        if (!confirm("Are you sure you want to delete Gig #" + gigId + "? This will also remove any applications for it.")) {
+            return;
+        }
+        fetch("delete-gig?ajax=true&id=" + gigId, { method: "POST" })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadGigs(searchInput ? searchInput.value.trim() : "");
+                } else {
+                    alert("Failed to delete gig: " + (data.message || "Unknown error"));
+                }
+            })
+            .catch(error => {
+                console.error("Error deleting gig:", error);
+                window.location.href = "delete-gig?id=" + gigId;
+            });
+    }
 </script>
 </html>

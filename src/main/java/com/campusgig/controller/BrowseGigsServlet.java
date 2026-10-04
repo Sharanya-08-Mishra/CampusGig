@@ -74,10 +74,13 @@ public class BrowseGigsServlet extends HttpServlet {
 
         StringBuilder html = new StringBuilder();
         for (Gig gig : gigs) {
-            html.append("<div class=\"gig-card\">");
+            html.append("<div class=\"gig-card\" id=\"gig-card-").append(gig.getGigId()).append("\">");
             html.append("    <div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;\">");
             html.append("        <span class=\"status-badge status-badge-open\">&#9679; ").append(escapeHtml(gig.getStatus() != null ? gig.getStatus() : "Open")).append("</span>");
-            html.append("        <span style=\"font-size: 13px; color: var(--muted); font-weight: 600;\">Gig #").append(gig.getGigId()).append("</span>");
+            html.append("        <div style=\"display: flex; align-items: center; gap: 8px;\">");
+            html.append("            <span style=\"font-size: 13px; color: var(--muted); font-weight: 600;\">Gig #").append(gig.getGigId()).append("</span>");
+            html.append("            <button type=\"button\" onclick=\"deleteGig(").append(gig.getGigId()).append(")\" class=\"btn btn-danger\" style=\"padding: 4px 10px; font-size: 12px; border-radius: 6px; cursor: pointer; border: none;\" title=\"Delete this gig\">Delete</button>");
+            html.append("        </div>");
             html.append("    </div>");
             html.append("    <h3 style=\"margin-bottom: 10px; color: var(--dark); font-size: 20px;\">").append(escapeHtml(gig.getTitle())).append("</h3>");
             html.append("    <p style=\"color: var(--muted); font-size: 14px; margin-bottom: 16px; line-height: 1.5;\">").append(escapeHtml(gig.getDescription())).append("</p>");
@@ -130,6 +133,18 @@ public class BrowseGigsServlet extends HttpServlet {
         page.append("    <footer class=\"footer\">\n");
         page.append("        <p>&copy; 2026 CampusGig. Built by students, for students.</p>\n");
         page.append("    </footer>\n");
+        page.append("    <script>\n");
+        page.append("        function deleteGig(gigId) {\n");
+        page.append("            if (!confirm('Are you sure you want to delete Gig #' + gigId + '? This will also delete any applications received for it.')) return;\n");
+        page.append("            fetch('delete-gig?ajax=true&id=' + gigId, { method: 'POST' })\n");
+        page.append("                .then(res => res.json())\n");
+        page.append("                .then(data => {\n");
+        page.append("                    if (data.success) { window.location.reload(); }\n");
+        page.append("                    else { alert('Error: ' + data.message); }\n");
+        page.append("                })\n");
+        page.append("                .catch(() => { window.location.href = 'delete-gig?id=' + gigId; });\n");
+        page.append("        }\n");
+        page.append("    </script>\n");
         page.append("</body>\n</html>");
         return page.toString();
     }
