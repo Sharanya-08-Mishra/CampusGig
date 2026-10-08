@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CampusGig</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .tabs { display:flex; gap:10px; margin:20px 0; flex-wrap:wrap; }
+        .tab { padding:8px 16px; border-radius:20px; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:600; }
+        .tab.active { background:#6c5ce7; color:#fff; border-color:#6c5ce7; }
+        .app-card { background:#fff; border-radius:12px; padding:20px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+        .app-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+        .badge { padding:4px 10px; border-radius:12px; font-size:12px; font-weight:700; }
+        .b-pending { background:#fef3c7; color:#92400e; }
+        .b-hired { background:#dcfce7; color:#166534; }
+        .b-rejected { background:#fee2e2; color:#991b1b; }
+        .actions { display:flex; gap:10px; margin-top:12px; }
+        .btn-accept { background:#16a34a; color:#fff; border:none; padding:8px 18px; border-radius:8px; cursor:pointer; font-weight:700; }
+        .btn-reject { background:#dc2626; color:#fff; border:none; padding:8px 18px; border-radius:8px; cursor:pointer; font-weight:700; }
+        .muted { color:#6b7280; font-size:14px; }
+        .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+        .app-card h4 { margin:12px 0 4px; color:#6c5ce7; }
+        .app-card p { margin:2px 0; font-size:14px; }
+        @media (max-width:700px){ .grid2{grid-template-columns:1fr;} }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="index.html" class="logo">Campus<span>Gig</span></a>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="browse-gigs.html">Browse Gigs</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="post-gig.html" class="nav-button">Post a Gig</a></li>
+    </ul>
+</nav>
+
+<main class="container">
+    <div class="page-title">
+        <h1>Applications Dashboard</h1>
+        <p>Review applications and accept or reject pending ones.</p>
+    </div>
+
+    <div class="tabs" id="tabs">
+        <button class="tab active" data-f="Pending">Pending</button>
+        <button class="tab" data-f="HIRED">Accepted</button>
+        <button class="tab" data-f="REJECTED">Rejected</button>
+        <button class="tab" data-f="ALL">All</button>
+    </div>
+
+    <div id="list"><p class="muted">Loading...</p></div>
+</main>
+
+<footer class="footer"><p>&copy; 2026 CampusGig. Built by students, for students.</p></footer>
+
+<script>
+    let apps = [];
+    let filter = 'Pending';
+
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g,
+            c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function norm(s) { return (s || '').toUpperCase(); }
+
+    function render() {
+        const items = apps.filter(a => filter === 'ALL' || norm(a.status) === norm(filter));
+        const list = document.getElementById('list');
+        if (!items.length) { list.innerHTML = '<p class="muted">No applications here.</p>'; return; }
+        list.innerHTML = items.map(a => {
+            const st = norm(a.status);
+            const cls = st === 'HIRED' ? 'b-hired' : st === 'REJECTED' ? 'b-rejected' : 'b-pending';
+            const label = st === 'HIRED' ? 'Accepted' : st === 'REJECTED' ? 'Rejected' : 'Pending';
+            const isImg = /\.(png|jpe?g|gif|webp)$/i.test(a.portfolio || '');
+            const isPdf = /\.pdf$/i.test(a.portfolio || '');
+            const url = 'resume?file=' + encodeURIComponent(a.portfolio || '');
+            const resume = !a.portfolio ? '<span class="muted">No resume uploaded</span>'
+                : `<a href="${url}" target="_blank">&#128206; Open resume</a> &middot; <a href="${url}" download>Download</a>
+                   ${isPdf ? `<iframe src="${url}" style="width:100%;height:380px;margin-top:8px;border:1px solid #ddd;border-radius:8px"></iframe>` : ''}
+                   ${isImg ? `<img src="${url}" style="max-width:100%;margin-top:8px;border-radius:8px">` : ''}`;
+            const buttons = st === 'PENDING'
+                ? `<div class="actions">
+                     <button class="btn-accept" onclick="act(${a.id},'accept')">Accept</button>
+                     <button class="btn-reject" onclick="act(${a.id},'reject')">Reject</button>
+                   </div>` : '';
+            return `<div class="app-card">
+                <div class="app-head"><strong>Application #${a.id}</strong>
+                  <span class="badge ${cls}">${label}</span></div>
+                <div class="grid2">
+                  <div><h4>Applicant</h4>
+                    <p>Student ID: #${a.applicantId}</p>
+                    <p>Name: ${esc(a.studentName) || '-'}</p>
+                    <p>Email: ${esc(a.studentEmail) || '-'}</p></div>
+                  <div><h4>Gig</h4>
+                    <p><b>${esc(a.gigTitle) || '-'}</b> (Gig #${a.gigId})</p>
+                    <p>${esc(a.gigDescription)}</p>
+                    <p>Budget: &#8377;${esc(a.gigBudget)} &middot; Deadline: ${esc(a.gigDeadline)}</p>
+                    <p>Gig status: ${esc(a.gigStatus)} &middot; Poster #${a.posterId}</p></div>
+                </div>
+                <h4>Pitch</h4><p>${esc(a.pitch)}</p>
+                <h4>Resume / Portfolio</h4><div>${resume}</div>${buttons}</div>`;
+        }).join('');
+    }
+
+    async function load() {
+        try {
+            const r = await fetch('api/applications');
+            apps = await r.json();
+            if (!Array.isArray(apps)) throw new Error();
+        } catch (e) {
+            document.getElementById('list').innerHTML = '<p class="muted">Failed to load applications.</p>';
+            return;
+        }
+        render();
+    }
+
+    async function act(id, action) {
+        const r = await fetch('api/applications?action=' + action + '&id=' + id, { method: 'POST' });
+        const d = await r.json();
+        if (d.success) {
+            const a = apps.find(x => x.id === id);
+            if (a) a.status = d.status;
+            render();
+        } else {
+            alert('Update failed');
+        }
+    }
+
+    document.getElementById('tabs').addEventListener('click', e => {
+        if (!e.target.dataset.f) return;
+        filter = e.target.dataset.f;
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === e.target));
+        render();
+    });
+
+    load();
+</script>
+</body>
+</html>

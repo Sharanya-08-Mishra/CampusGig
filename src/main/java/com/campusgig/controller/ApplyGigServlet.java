@@ -106,12 +106,7 @@ public class ApplyGigServlet extends HttpServlet {
                 }
                 portfolioFileName = UUID.randomUUID() + ext;
 
-                String uploadDir = getServletContext().getInitParameter("portfolioUploadDir");
-                if (uploadDir == null || uploadDir.isBlank()) {
-                    uploadDir = "uploads";
-                }
-
-                Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
+                Path uploadPath = Paths.get(DownloadResumeServlet.UPLOAD_DIR).toAbsolutePath();
                 Files.createDirectories(uploadPath);
 
                 Path targetFile = uploadPath.resolve(portfolioFileName);
